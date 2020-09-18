@@ -68,10 +68,16 @@ class AutobahnBlockchain {
             nonce++;
             hash = this.hashBlock(prevBlockHash, currentBlockData, nonce);
         };
+    
 
         return nonce;
-    }
 
+
+    }
+    runProofOfWork(){
+        setTimeout(this.proofOfWork.bind(this), 3000);
+    }
+   
 }
    
 module.exports = AutobahnBlockchain;
