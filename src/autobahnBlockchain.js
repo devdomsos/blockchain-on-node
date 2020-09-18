@@ -1,60 +1,77 @@
 const sha256 = require('sha256');
 
-
 class Block {
-    constructor (index, prevBlockHash, currentHash, timestamp, transactionData, nonce) {
-        this.index = index;
-        this.prevBlockHash = prevBlockHash;
-        this.currentHash = currentHash;
+    constructor(blockHeight, timestamp, nonce, prevBlockHash, hash, transactions) {
+        this.blockHeight = blockHeight;
         this.timestamp = timestamp;
-        this.transactionData = transactionData;
-        this.nonce = nonce
+        this.transactions = transactions;
+        this.nonce = nonce;
+        this.hash = hash;
+        this.prevBlockHash = prevBlockHash;
     }
 }
 
 class AutobahnBlockchain {
-    constructor () {
+    constructor() {
         this.chain = [];
-        this.pendingTrx = [];
+        this.pendingTransactions = [];
 
-        this.createNewBlock(50, '0', 'Genesis Block' )
+        this.createNewBlock(100, '0', 'Genesis block');
     }
 
-    createNewBlock(prevBlockHash, currentHash, nonce) {
+    createNewBlock(nonce, prevBlockHash, hash) {
         const newBlock = new Block(
             this.chain.length + 1,
+            Date.now(),
+            nonce,
             prevBlockHash,
-            currentHash,
-            Date.now() / 1000,
-            this.pendingTrx,
-            nonce
+            hash,
+            this.pendingTransactions
         );
-        this.pendingTrx = [];
-        this.chain.push(newBlock)
-    }
 
-    createNewTransaction(sender, recipient, amount){
-        const transaction = {
-            sender,
-            recipient,
-            amount
-        }
-        this.pendingTrx.push(transaction)
+        this.pendingTransactions = [];
+        this.chain.push(newBlock);
 
-        console.log(`>> Transaction: ${amount} from ${sender} to ${recipient} `)
-
-        return this.getLatestBlock().index + 1
+        return newBlock;
     }
 
     getLatestBlock() {
-        return this.chain[this.chain.length - 1]
-    } 
+        return this.chain[this.chain.length - 1];
+    }
 
-    hashBlock(prevBlockHash, currentBlockInfo, nonce) {
-        const data = prevBlockHash + JSON.stringify(currentBlockInfo) + nonce;
+    makeNewTransaction(amount, sender, recipient) {
+        const transaction = {
+            amount,
+            sender,
+            recipient
+        }
+
+        this.pendingTransactions.push(transaction);
+
+        console.log(`------->>> Transaction amounting to ${amount} has been sent from ${sender} to ${recipient}`);
+
+        return this.getLatestBlock().blockHeight + 1;
+    }
+
+    hashBlock(prevBlockHash, currentBlock, nonce) {
+        const data = prevBlockHash + JSON.stringify(currentBlock) + nonce;
         const hash = sha256(data);
         return hash;
     }
 
-}
+    proofOfWork(prevBlockHash, currentBlockData) {
+        let nonce = 0;
+        let hash = this.hashBlock(prevBlockHash, currentBlockData, nonce);
 
+        
+        while (hash.substring(0, 4) !== '0000') {
+            nonce++;
+            hash = this.hashBlock(prevBlockHash, currentBlockData, nonce);
+        };
+
+        return nonce;
+    }
+
+}
+   
+module.exports = AutobahnBlockchain;
