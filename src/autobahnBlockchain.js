@@ -16,7 +16,7 @@ class AutobahnBlockchain {
         this.chain = [];
         this.pendingTransactions = [];
 
-        this.createNewBlock(100, '0', 'Genesis block');
+        this.createNewBlock(100, 'Genesis', 'Genesis');
     }
 
     createNewBlock(nonce, prevBlockHash, hash) {
@@ -31,7 +31,7 @@ class AutobahnBlockchain {
 
         this.pendingTransactions = [];
         this.chain.push(newBlock);
-
+    
         return newBlock;
     }
 
@@ -49,33 +49,32 @@ class AutobahnBlockchain {
         this.pendingTransactions.push(transaction);
 
         console.log(`------->>> Transaction amounting to ${amount} has been sent from ${sender} to ${recipient}`);
-
+        console.log('this is getLatestBlock.blockheight', this.getLatestBlock().blockHeight);
         return this.getLatestBlock().blockHeight + 1;
     }
+
 
     hashBlock(prevBlockHash, currentBlock, nonce) {
         const data = prevBlockHash + JSON.stringify(currentBlock) + nonce;
         const hash = sha256(data);
+        console.log(' === > Hashing... ', hash)
         return hash;
     }
-
+    
     proofOfWork(prevBlockHash, currentBlockData) {
         let nonce = 0;
         let hash = this.hashBlock(prevBlockHash, currentBlockData, nonce);
 
         
-        while (hash.substring(0, 4) !== '0000') {
+        while (hash.substring(0, 3) !== '000') {
             nonce++;
             hash = this.hashBlock(prevBlockHash, currentBlockData, nonce);
         };
     
-
+        console.log(' === > proof of work ', nonce)
         return nonce;
 
 
-    }
-    runProofOfWork(){
-        setTimeout(this.proofOfWork.bind(this), 3000);
     }
    
 }
