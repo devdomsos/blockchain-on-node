@@ -30,10 +30,11 @@ txl.makeNewTransaction(120, 'angiemcangular', 'geolocation');
 mine(txl);
 
 txl.makeNewTransaction(1120, 'jayquery', 'jsonbabel');
-txl.makeNewTransaction(300, 'ecmaScriptnstuff', 'angiemcangular');
-txl.makeNewTransaction(200, 'jsonBabel', 'jayQuery');
+txl.makeNewTransaction(300, 'ecmascriptnstuff', 'angiemcangular');
+txl.makeNewTransaction(200, 'jsonbabel', 'jayquery');
 
 mine(txl);
 
 console.log('>>> Current Blockchain Data:\n', txl);
 txl.getAllTransactions('jayquery')
+txl.getBalanceOfAllRelevantTransactions('jsonbabel')

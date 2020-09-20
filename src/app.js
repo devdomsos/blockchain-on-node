@@ -67,10 +67,12 @@ app.post('/createTransaction/', (req, res) => {
 app.get('/address/:MYADDRESS', (req, res) => {
     userTypedAddress = req.params.MYADDRESS.toLocaleLowerCase();
     allRelevantTransactions = txl.getAllTransactions(userTypedAddress)
+    theCurrentBalanceOfTransactions = txl.getBalanceOfAllRelevantTransactions(userTypedAddress)
     res.json(
         {
             message: 'All relevant transactions obtained!',
-            allRelevantTransactions
+            allRelevantTransactions,
+            theCurrentBalanceOfTransactions
         }
     );
 })

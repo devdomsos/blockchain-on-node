@@ -59,11 +59,24 @@ class AutobahnBlockchain {
             block.transactions.forEach( transaction => {
                 if (transaction.sender === address || transaction.recipient === address ){
                     allRelevantTransactions.push(transaction)
-                    console.log('these are all relevant transaction: ', allRelevantTransactions)
                 } 
-            } )
+               
+            })
         })
         return allRelevantTransactions;
+    }
+
+    getBalanceOfAllRelevantTransactions(address) {
+        let totalBalance = 0
+        this.chain.forEach( block => {
+            block.transactions.forEach( transaction => {
+                if (transaction.sender === address || transaction.recipient === address ){
+                    totalBalance += transaction.amount;
+                } 
+            })
+        })
+        console.log('this is total balance', totalBalance)
+        return totalBalance
     }
     
 
