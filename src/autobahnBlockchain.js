@@ -16,7 +16,7 @@ class AutobahnBlockchain {
         this.chain = [];
         this.pendingTransactions = [];
 
-        this.createNewBlock(100, 'Genesis', 'Genesis');
+        this.createNewBlock(100, 'genesis', 'genesis');
     }
 
     createNewBlock(nonce, prevBlockHash, hash) {
@@ -53,6 +53,19 @@ class AutobahnBlockchain {
         return this.getLatestBlock().blockHeight + 1;
     }
 
+    getAllTransactions(address){
+        const allRelevantTransactions = [];
+        this.chain.forEach( block => {
+            block.transactions.forEach( transaction => {
+                if (transaction.sender === address || transaction.recipient === address ){
+                    allRelevantTransactions.push(transaction)
+                    console.log('these are all relevant transaction: ', allRelevantTransactions)
+                } 
+            } )
+        })
+        return allRelevantTransactions;
+    }
+    
 
     hashBlock(prevBlockHash, currentBlock, nonce) {
         const data = prevBlockHash + JSON.stringify(currentBlock) + nonce;
@@ -66,7 +79,7 @@ class AutobahnBlockchain {
         let hash = this.hashBlock(prevBlockHash, currentBlockData, nonce);
 
         
-        while (hash.substring(0, 3) !== '000') {
+        while (hash.substring(0, 2) !== '00') {
             nonce++;
             hash = this.hashBlock(prevBlockHash, currentBlockData, nonce);
         };

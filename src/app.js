@@ -64,7 +64,18 @@ app.post('/createTransaction/', (req, res) => {
     );
 });
 
-const randomNode = "JSONBabel"
+app.get('/address/:MYADDRESS', (req, res) => {
+    userTypedAddress = req.params.MYADDRESS.toLocaleLowerCase();
+    allRelevantTransactions = txl.getAllTransactions(userTypedAddress)
+    res.json(
+        {
+            message: 'All relevant transactions obtained!',
+            allRelevantTransactions
+        }
+    );
+})
+
+const randomNode = "miningNodeStradamus"
 
 // manual proof of work
 app.get('/mine', (req, res) =>  {
@@ -78,7 +89,7 @@ app.get('/mine', (req, res) =>  {
     const blockHash = txl.hashBlock(prevBlockHash, currentBlockData, nonce);
  
     // reward for mining
-    txl.makeNewTransaction(1, '00000', randomNode);
+    txl.makeNewTransaction(1, 'Genesis', randomNode);
  
     const newBlock = txl.createNewBlock(nonce, prevBlockHash, blockHash)
     res.json(

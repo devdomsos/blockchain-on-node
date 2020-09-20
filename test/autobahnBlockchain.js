@@ -17,7 +17,7 @@ const mine = (blockChain) => {
     const blockHash = blockChain.hashBlock(prevBlockHash, currentBlockData, nonce);
 
     // reward for mining
-    blockChain.makeNewTransaction(1, 'Genesis', minerAddress);
+    blockChain.makeNewTransaction(1, 'genesis', minerAddress);
 
     console.log('--->>> Create new Block:\n', blockChain.createNewBlock(nonce, prevBlockHash, blockHash));
 }
@@ -25,14 +25,15 @@ const mine = (blockChain) => {
 const txl = new AutobahnBlockchain();
 console.log('--->>> Create new Blockchain:\n', txl);
 
-txl.makeNewTransaction(120, 'AngieMcAngular', 'GeoLoCation');
+txl.makeNewTransaction(120, 'angiemcangular', 'geolocation');
 
 mine(txl);
 
-txl.makeNewTransaction(1120, 'JayQuery', 'JsonBabel');
-txl.makeNewTransaction(300, 'EcmaScriptnstuff', 'AngieMcAngular');
-txl.makeNewTransaction(200, 'JsonBabel', 'JayQuery');
+txl.makeNewTransaction(1120, 'jayquery', 'jsonbabel');
+txl.makeNewTransaction(300, 'ecmaScriptnstuff', 'angiemcangular');
+txl.makeNewTransaction(200, 'jsonBabel', 'jayQuery');
 
 mine(txl);
 
 console.log('>>> Current Blockchain Data:\n', txl);
+txl.getAllTransactions('jayquery')
