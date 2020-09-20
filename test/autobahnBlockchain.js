@@ -1,6 +1,10 @@
 const AutobahnBlockchain = require('../src/autobahnBlockchain');
+const minerAddress = 'miningNodeStradamus'
 
-function mine(blockChain) {
+
+
+
+const mine = (blockChain) => {
     console.log('--->>> Mining in progress...');
 
     const latestBlock = blockChain.getLatestBlock();
@@ -13,7 +17,7 @@ function mine(blockChain) {
     const blockHash = blockChain.hashBlock(prevBlockHash, currentBlockData, nonce);
 
     // reward for mining
-    blockChain.makeNewTransaction(1, '00000', 'miningNodeStradamus');
+    blockChain.makeNewTransaction(1, 'genesis', minerAddress);
 
     console.log('--->>> Create new Block:\n', blockChain.createNewBlock(nonce, prevBlockHash, blockHash));
 }
@@ -21,14 +25,17 @@ function mine(blockChain) {
 const txl = new AutobahnBlockchain();
 console.log('--->>> Create new Blockchain:\n', txl);
 
-txl.makeNewTransaction(120, 'Angie McAngular', 'Geo Lo Cation');
+txl.makeNewTransaction(120, 'angiemcangular', 'geolocation');
 
 mine(txl);
 
-txl.makeNewTransaction(1120, 'Jay Query', 'Json Babel');
-txl.makeNewTransaction(300, 'Ecma Scriptnstuff', 'Angie McAngular');
-txl.makeNewTransaction(2700, 'Json Babel', 'Jay Query');
+txl.makeNewTransaction(1120, 'jayquery', 'jsonbabel');
+txl.makeNewTransaction(300, 'ecmascriptnstuff', 'angiemcangular');
+txl.makeNewTransaction(200, 'jsonbabel', 'jayquery');
 
 mine(txl);
 
 console.log('>>> Current Blockchain Data:\n', txl);
+txl.getAllTransactions('jayquery')
+txl.getBalanceOfAllRelevantTransactions('jsonbabel')
+txl.getBlockByHeight(1)
