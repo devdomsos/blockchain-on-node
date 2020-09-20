@@ -22,7 +22,7 @@ Install the required dependencies.
 First step:
 
 ```
-run npm i
+npm i
 ```
 
 Once dependencies are installed. Connect to MongoDB (https://www.mongodb.com/try/download/community). 
