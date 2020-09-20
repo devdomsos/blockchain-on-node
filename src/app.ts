@@ -1,18 +1,23 @@
-const express = require('express');
+import express, {Request, Response} from 'express'
 const app = express();
 require('dotenv').config();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const AutobahnBlockchain = require('../src/autobahnBlockchain');
-const AutobahnBlockchainModel = require('../src/database/model');
+const AutobahnBlockchain = require('./autobahnBlockchain');
+const AutobahnBlockchainModel = require('./database/model');
 
-
+declare var process : {
+    env: {
+        MONGO_PATH: string,
+        BLOCK_TIME: number
+    }
+  }
 const mongoPath = process.env.MONGO_PATH;
-const blocktimeconfig = process.env.BLOCK_TIME;
+const blocktimeconfig:number | undefined = process.env.BLOCK_TIME;
 const txl = new AutobahnBlockchain();
 
 // Connect to DB 
-const connectToDB = async () => {
+const connectToDB = () => {
     try {
 		if (mongoPath === '') {
 			throw new Error('Invalid or empty mongoURI provided');
@@ -41,16 +46,16 @@ connectToDB()
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.get('/', (req, res) => {
+// get entire blockchain
+app.get('/', (req: Request, res: Response) => {
     res.send(txl);
 });
- 
-app.get('/blockchain', (req, res) => {
+app.get('/blockchain', (req: Request, res: Response) => {
     res.send(txl);
 });
 
-app.post('/createTransaction/', (req, res) => {
+// create one transaction via endpoint
+app.post('/createtransaction/', (req: Request, res: Response) => {
     const blockIndex = txl.makeNewTransaction(
         req.body.amount,
         req.body.sender,
@@ -64,10 +69,11 @@ app.post('/createTransaction/', (req, res) => {
     );
 });
 
-app.get('/address/:MYADDRESS', (req, res) => {
-    userTypedAddress = req.params.MYADDRESS.toLocaleLowerCase();
-    allRelevantTransactions = txl.getAllTransactions(userTypedAddress)
-    theCurrentBalanceOfTransactions = txl.getBalanceOfAllRelevantTransactions(userTypedAddress)
+// query by address 
+app.get('/getaddress/:MYADDRESS', (req: Request, res: Response) => {
+    let userTypedAddress = req.params.MYADDRESS.toLocaleLowerCase();
+    let allRelevantTransactions = txl.getAllTransactions(userTypedAddress)
+    let theCurrentBalanceOfTransactions = txl.getBalanceOfAllRelevantTransactions(userTypedAddress)
     res.json(
         {
             message: 'All relevant transactions obtained!',
@@ -77,10 +83,23 @@ app.get('/address/:MYADDRESS', (req, res) => {
     );
 })
 
+// query by block height
+app.get('/getblockheight/:BlockHeight', (req: Request, res: Response) =>{
+       let blockHeightInput = parseInt(req.params.BlockHeight);
+       let  blockHeight = txl.getBlockByHeight(blockHeightInput)
+    res.json(
+        {
+            message: 'BlockHeight successfully obtained!',
+            blockHeight
+            
+        }
+    );
+})
+
 const randomNode = "miningNodeStradamus"
 
 // manual proof of work
-app.get('/mine', (req, res) =>  {
+app.get('/mine', (req: Request, res: Response) =>  {
     const latestBlock = txl.getLatestBlock();
     const prevBlockHash = latestBlock.hash;
     const currentBlockData = {
@@ -94,6 +113,8 @@ app.get('/mine', (req, res) =>  {
     txl.makeNewTransaction(1, 'Genesis', randomNode);
  
     const newBlock = txl.createNewBlock(nonce, prevBlockHash, blockHash)
+    const blockToBeSavedToDB = new AutobahnBlockchainModel(newBlock);
+    blockToBeSavedToDB.save();
     res.json(
         {
             message: 'New block has been mined successfully!',

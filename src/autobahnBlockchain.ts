@@ -1,7 +1,28 @@
 const sha256 = require('sha256');
 
+interface Block {
+    blockHeight: number;
+    timestamp: number;
+    transactions: Array<string | number | object>
+    nonce: number;
+    prev: string;
+    hash: string;
+    prevBlockHash: string;
+}
+
+interface AutobahnBlockchain {
+    chain: string[],
+    pendingTransactions: string[]
+}
+
 class Block {
-    constructor(blockHeight, timestamp, nonce, prevBlockHash, hash, transactions) {
+    constructor(blockHeight:number, 
+                timestamp: number, 
+                nonce: number, 
+                prevBlockHash: string, 
+                hash: string, 
+                transactions:string[]) 
+        {
         this.blockHeight = blockHeight;
         this.timestamp = timestamp;
         this.transactions = transactions;
@@ -19,8 +40,8 @@ class AutobahnBlockchain {
         this.createNewBlock(100, 'genesis', 'genesis');
     }
 
-    createNewBlock(nonce, prevBlockHash, hash) {
-        const newBlock = new Block(
+    createNewBlock(nonce: number, prevBlockHash: string, hash: string){
+        const newBlock:any = new Block(
             this.chain.length + 1,
             Date.now(),
             nonce,
@@ -39,8 +60,8 @@ class AutobahnBlockchain {
         return this.chain[this.chain.length - 1];
     }
 
-    makeNewTransaction(amount, sender, recipient) {
-        const transaction = {
+    makeNewTransaction(amount:number, sender:string, recipient:string) {
+        const transaction:any = {
             amount,
             sender,
             recipient
@@ -49,14 +70,15 @@ class AutobahnBlockchain {
         this.pendingTransactions.push(transaction);
 
         console.log(`------->>> Transaction amounting to ${amount} has been sent from ${sender} to ${recipient}`);
-        console.log('this is getLatestBlock.blockheight', this.getLatestBlock().blockHeight);
-        return this.getLatestBlock().blockHeight + 1;
+        // this.getLatestBlock().blockHeight + 1;
+        
+        return this.getLatestBlock() + 1;
     }
 
-    getAllTransactions(address){
-        const allRelevantTransactions = [];
-        this.chain.forEach( block => {
-            block.transactions.forEach( transaction => {
+    getAllTransactions(address:string){
+        const allRelevantTransactions:string[] = [];
+        this.chain.forEach( (block:any) => {
+            block.transactions.forEach( (transaction:any) => {
                 if (transaction.sender === address || transaction.recipient === address ){
                     allRelevantTransactions.push(transaction)
                 } 
@@ -66,28 +88,38 @@ class AutobahnBlockchain {
         return allRelevantTransactions;
     }
 
-    getBalanceOfAllRelevantTransactions(address) {
+    getBalanceOfAllRelevantTransactions(address:string) {
         let totalBalance = 0
-        this.chain.forEach( block => {
-            block.transactions.forEach( transaction => {
+        this.chain.forEach( (block:any) => {
+            block.transactions.forEach( (transaction:any) => {
                 if (transaction.sender === address || transaction.recipient === address ){
                     totalBalance += transaction.amount;
                 } 
             })
         })
-        console.log('this is total balance', totalBalance)
+        console.log('This is total balance', totalBalance)
         return totalBalance
+    }
+
+    getBlockByHeight(Height:number){
+        let currentBlock:any[] = [];
+        this.chain.forEach( (block:any) => {
+            if (block.blockHeight === Height){
+                currentBlock.push(block)
+            }        
+        })
+        return currentBlock;
     }
     
 
-    hashBlock(prevBlockHash, currentBlock, nonce) {
+    hashBlock(prevBlockHash:string, currentBlock:object, nonce:number) {
         const data = prevBlockHash + JSON.stringify(currentBlock) + nonce;
         const hash = sha256(data);
         console.log(' === > Hashing... ', hash)
         return hash;
     }
     
-    proofOfWork(prevBlockHash, currentBlockData) {
+    proofOfWork(prevBlockHash:string, currentBlockData:object) {
         let nonce = 0;
         let hash = this.hashBlock(prevBlockHash, currentBlockData, nonce);
 

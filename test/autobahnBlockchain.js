@@ -38,3 +38,4 @@ mine(txl);
 console.log('>>> Current Blockchain Data:\n', txl);
 txl.getAllTransactions('jayquery')
 txl.getBalanceOfAllRelevantTransactions('jsonbabel')
+txl.getBlockByHeight(1)
